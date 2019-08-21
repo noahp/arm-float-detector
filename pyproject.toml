@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "arm-float-detector"
+version = "0.1.0"
+description = "Detect software floating point usage in arm binaries"
+authors = ["Noah Pendleton <2538614+noahp@users.noreply.github.com>"]
+readme = "README.md"
+
+repository = "https://github.com/noahp/arm-float-detector"
+homepage = "https://github.com/noahp/arm-float-detector"
+
+[tool.poetry.dependencies]
+python = "^2.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
