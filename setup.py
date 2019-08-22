@@ -2,16 +2,18 @@
 """
 Setup package.
 """
+from __future__ import absolute_import
 import io
 from setuptools import setup
+from arm_float_detector.arm_float_detector import VERSION
 
 # Get long description from readme
 with io.open("README.md", "rt", encoding="utf8") as readmefile:
-    readme = readmefile.read()
+    README = readmefile.read()
 
 setup(
     name="arm-float-detector",
-    version="0.1.0",
+    version=VERSION,
     description="Detect software floating point usage in arm binaries",
     author="Noah Pendleton",
     author_email="2538614+noahp@users.noreply.github.com",
@@ -20,7 +22,7 @@ setup(
         "Code": "https://github.com/noahp/arm-float-detector",
         "Issue tracker": "https://github.com/noahp/arm-float-detector/issues",
     },
-    long_description=readme,
+    long_description=README,
     long_description_content_type="text/markdown",
     license="MIT",
     packages=["arm_float_detector"],

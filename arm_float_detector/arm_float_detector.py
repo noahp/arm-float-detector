@@ -5,9 +5,13 @@ Utility to sniff out soft float function calls in arm object code (.o, .a,
 """
 
 from __future__ import print_function
+from __future__ import absolute_import
 import argparse
 import subprocess
 import sys
+
+VERSION = "0.1.1"
+
 
 # Soft float library functions are enumerated here, single + double:
 # https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arm/sfp-machine.h
@@ -106,7 +110,9 @@ def parse_args():
     parser.add_argument(
         "--double", action="store_true", help="detect double-precision references"
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 2.0")
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s {}".format(VERSION)
+    )
     return parser.parse_args()
 
 
