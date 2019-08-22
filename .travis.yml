@@ -11,7 +11,8 @@ python:
   - "2.7"
   - "3.6"
   - "3.7"
-  - "3.8"
+  # 3.8 alas :/
+  # - "3.8"
 
 install:
   # use specific versions in case something breaks
