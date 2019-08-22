@@ -1,0 +1,20 @@
+sudo: false
+
+before_install:
+  - sudo apt-get install -y gcc-arm-none-eabi
+
+language: python
+
+python:
+  - "2.7"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+
+install:
+  # use specific versions in case something breaks
+  - pip install tox-travis==0.11 tox==3.7.0
+
+script:
+  # run tox with automatically derived number of parallel jobs
+  - tox --parallel auto

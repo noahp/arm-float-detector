@@ -1,2 +1,6 @@
 dist/
 *.o
+*.pyc
+.tox/
+*.egg-info
+build/

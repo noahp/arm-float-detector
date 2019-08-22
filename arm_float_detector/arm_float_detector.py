@@ -1,14 +1,42 @@
+# -*- coding: UTF-8 -*-
 """
 Utility to sniff out soft float function calls in arm object code (.o, .a,
 .elf).
 """
 
+from __future__ import print_function
 import argparse
 import subprocess
+import sys
 
-# Soft float library functions are enumerated here:
-# https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arm/sfp-machine.h#L90-L108
-# Manually copied into this list.
+# Soft float library functions are enumerated here, single + double:
+# https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arm/sfp-machine.h
+# Manually copied into these lists.
+def gen_define_list(defines):
+    """Return a generator of the references we care about"""
+    # world's greatest clang define parser right here 😞
+    return (x.split()[2] for x in defines.strip().splitlines())
+
+
+SINGLE_DEFINES = """
+#define __negsf2	__aeabi_fneg
+#define __subsf3	__aeabi_fsub
+#define __addsf3	__aeabi_fadd
+#define __floatunsisf	__aeabi_ui2f
+#define __floatsisf	__aeabi_i2f
+#define __floatundisf	__aeabi_ul2f
+#define __floatdisf	__aeabi_l2f
+#define __mulsf3	__aeabi_fmul
+#define __divsf3	__aeabi_fdiv
+#define __unordsf2	__aeabi_fcmpun
+#define __fixsfsi	__aeabi_f2iz
+#define __fixunssfsi	__aeabi_f2uiz
+#define __fixsfdi	__aeabi_f2lz
+#define __fixunssfdi	__aeabi_f2ulz
+#define __floatdisf	__aeabi_l2f
+"""
+SINGLE_FUNCTIONS = gen_define_list(SINGLE_DEFINES)
+
 DOUBLE_DEFINES = """
 #define __negdf2	__aeabi_dneg
 #define __subdf3	__aeabi_dsub
@@ -30,13 +58,54 @@ DOUBLE_DEFINES = """
 #define __extendhfsf2	__gnu_h2f_ieee
 #define __truncsfhf2	__gnu_f2h_ieee
 """
-DOUBLE_FUNCTIONS = (x.split()[2] for x in DOUBLE_DEFINES.strip().splitlines())
+DOUBLE_FUNCTIONS = gen_define_list(DOUBLE_DEFINES)
+
+
+def print_color(msg, color):
+    """Print a ansi term color string"""
+    if sys.stdout.isatty():
+        print("\033[{}m{}\033[m".format(color, msg))
+    else:
+        print(msg)
+
+
+def error(msg, terminate=True):
+    """Print colorful text, optionally exit"""
+    print_color(msg, 31)
+    if terminate:
+        exit(-1)
+
+
+def success(msg):
+    """Print colorfully positive text"""
+    print_color(msg, 32)
+
+
+def detect(binary, single, double):
+    """Detect. binary path, single=boolean, double=boolean. Returns True if
+    detected, False if not"""
+    grepfor = ""
+    if single:
+        grepfor += "|".join(SINGLE_FUNCTIONS)
+    if double:
+        grepfor += "|".join(DOUBLE_FUNCTIONS)
+
+    cmd = "nm {} | grep -E '{}'".format(binary, grepfor)
+    retcode = subprocess.call(cmd, shell=True)
+
+    return retcode == 0
 
 
 def parse_args():
     """Parse cmd line args"""
     parser = argparse.ArgumentParser(description="Detect soft double in arm binaries")
     parser.add_argument("binary", metavar="FILE", help=".o/.a/.elf to process")
+    parser.add_argument(
+        "--single", action="store_true", help="detect single-precision references"
+    )
+    parser.add_argument(
+        "--double", action="store_true", help="detect double-precision references"
+    )
     parser.add_argument("--version", action="version", version="%(prog)s 2.0")
     return parser.parse_args()
 
@@ -46,13 +115,21 @@ def main():
 
     args = parse_args()
 
-    cmd = "nm {} | grep -E '{}'".format(args.binary, "|".join(DOUBLE_FUNCTIONS))
-    retcode = subprocess.call(cmd, shell=True)
-    if retcode == 0:
+    if not (args.single or args.double):
+        error("Specify one or both of --single / --double")
+
+    if detect(args.binary, args.single, args.double):
         # failure, exit non-zero!
         exit(-1)
     else:
-        print("No soft double libs found!")
+        success(
+            "No soft {} libs found!".format(
+                "/".join(
+                    (["single"] if args.single else [])
+                    + (["double"] if args.double else [])
+                )
+            )
+        )
     exit(0)
 
 
