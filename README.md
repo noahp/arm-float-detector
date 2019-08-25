@@ -1,7 +1,7 @@
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge)](https://github.com/ambv/black)
 [![Travis (.com)
-branch](https://img.shields.io/travis/com/noahp/arm-double-detector/master.svg?style=for-the-badge)](https://travis-ci.com/noahp/arm-double-detector)
+branch](https://img.shields.io/travis/com/noahp/arm-float-detector/master.svg?style=for-the-badge)](https://travis-ci.com/noahp/arm-float-detector)
 [![PyPI
 version](https://img.shields.io/pypi/v/arm-float-detector.svg?style=for-the-badge)](https://pypi.org/project/arm-float-detector/)
 [![PyPI
