@@ -10,7 +10,7 @@ import argparse
 import subprocess
 import sys
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 
 # Soft float library functions are enumerated here, single + double:
