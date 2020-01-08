@@ -94,7 +94,8 @@ def detect(binary, single, double):
     if double:
         grepfor += "|".join(DOUBLE_FUNCTIONS)
 
-    cmd = "nm {} | grep -E '{}'".format(binary, grepfor)
+    # grep for whole words (-w) to not show the *_veneer symbols
+    cmd = "nm {} | grep -w -E '{}'".format(binary, grepfor)
     retcode = subprocess.call(cmd, shell=True)
 
     return retcode == 0
