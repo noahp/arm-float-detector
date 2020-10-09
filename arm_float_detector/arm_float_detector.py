@@ -10,7 +10,7 @@ import argparse
 import subprocess
 import sys
 
-VERSION = "0.2.1"
+VERSION = "0.3.0"
 
 
 # Soft float library functions are enumerated here, single + double:
@@ -95,7 +95,7 @@ def detect(binary, single, double):
         grepfor += "|".join(DOUBLE_FUNCTIONS)
 
     # grep for whole words (-w) to not show the *_veneer symbols
-    cmd = "nm {} | grep -w -E '{}'".format(binary, grepfor)
+    cmd = "nm --print-size --size-sort {} | grep -w -E '{}'".format(binary, grepfor)
     retcode = subprocess.call(cmd, shell=True)
 
     return retcode == 0
